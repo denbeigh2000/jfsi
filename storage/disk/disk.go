@@ -93,7 +93,7 @@ func (s store) Update(id jfsi.ID, r io.Reader) error {
 		return storage.NotFoundErr(id)
 	}
 
-	r, err := s.read(id)
+	err := s.persist(id, r)
 	if err != nil {
 		return err
 	}
@@ -111,5 +111,12 @@ func (s store) Delete(id jfsi.ID) error {
 }
 
 func NewDiskStore(dir string) storage.Store {
-	return store{}
+	err := os.Mkdir(dir, 755)
+	if err != nil && !os.IsExist(err) {
+		panic(err)
+	}
+
+	return store{
+		dir: dir,
+	}
 }
