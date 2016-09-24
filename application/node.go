@@ -15,6 +15,10 @@ type Node interface {
 	Delete(jfsi.ID) error
 }
 
+func NewNode(sc StorageConfig) Node {
+	return node{StorageConfig: sc}
+}
+
 type node struct {
 	StorageConfig StorageConfig
 }
