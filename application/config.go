@@ -9,6 +9,14 @@ import (
 	"github.com/denbeigh2000/jfsi/storage"
 )
 
+func NewStorageConfig(stores []storage.Store) StorageConfig {
+	return StorageConfig{
+		RWMutex:     &sync.RWMutex{},
+		Replication: 0,
+		Stores:      stores,
+	}
+}
+
 type StorageConfig struct {
 	*sync.RWMutex
 
