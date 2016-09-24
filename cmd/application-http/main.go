@@ -10,8 +10,13 @@ import (
 )
 
 func main() {
-	store := client.NewClient("localhost", 8080)
-	config := application.NewStorageConfig([]storage.Store{store})
+	stores := []storage.Store{
+		client.NewClient("localhost", 8000),
+		client.NewClient("localhost", 8001),
+		client.NewClient("localhost", 8002),
+		client.NewClient("localhost", 8003),
+	}
+	config := application.NewStorageConfig(stores)
 	node := application.NewNode(config)
 	handler := handler.NewHTTP(node)
 
