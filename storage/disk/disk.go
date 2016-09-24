@@ -111,10 +111,10 @@ func (s store) Delete(id jfsi.ID) error {
 }
 
 func NewDiskStore(dir string) storage.Store {
-	err := os.Mkdir(dir, 755)
-	if err != nil && !os.IsExist(err) {
-		panic(err)
-	}
+	// err := os.Mkdir(dir, os.ModePerm)
+	// if err != nil && !os.IsExist(err) {
+	// 	panic(err)
+	// }
 
 	return store{
 		dir: dir,
