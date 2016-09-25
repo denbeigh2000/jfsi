@@ -1,6 +1,8 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"net/http"
 
 	"github.com/denbeigh2000/jfsi/application"
@@ -8,6 +10,12 @@ import (
 	"github.com/denbeigh2000/jfsi/storage"
 	"github.com/denbeigh2000/jfsi/storage/client"
 )
+
+var port = flag.Int("port", 8100, "Port to serve on")
+
+func init() {
+	flag.Parse()
+}
 
 func main() {
 	stores := []storage.Store{
@@ -20,5 +28,5 @@ func main() {
 	node := application.NewNode(config)
 	handler := handler.NewHTTP(node)
 
-	http.ListenAndServe(":8079", handler)
+	http.ListenAndServe(fmt.Sprintf(":%v", *port), handler)
 }

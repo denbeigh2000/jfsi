@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/denbeigh2000/jfsi/storage/disk"
@@ -11,7 +12,7 @@ import (
 
 var (
 	port = flag.Int("port", 8080, "Port to serve on")
-	dir  = flag.String("port", "./.jfsi", "Directory to store blobs in")
+	dir  = flag.String("dir", "./.jfsi", "Directory to store blobs in")
 )
 
 func init() {
@@ -22,5 +23,5 @@ func main() {
 	store := disk.NewDiskStore(*dir)
 	handler := handler.NewHTTP(store)
 
-	http.ListenAndServe(fmt.Sprintf(":%v", *port), handler)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", *port), handler))
 }
