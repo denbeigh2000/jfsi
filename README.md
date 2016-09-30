@@ -69,6 +69,7 @@ application-http -port 8080`
 ```
 
 ### TODO
+ - Chunked file storage (to avoid imbalance)
  - Tools for adding/removing nodes to an existing cluster + providing rebalancing tools
  - Configuration nodes
  - Configuration file support for applications
