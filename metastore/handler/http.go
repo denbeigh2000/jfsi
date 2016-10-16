@@ -12,10 +12,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type CreateRequest struct {
-	NChunks int `json:"n"`
-}
-
 type HTTP struct {
 	Store metastore.MetaStore
 
@@ -52,7 +48,7 @@ func (h *HTTP) HandleCreate(w http.ResponseWriter, r *http.Request) {
 
 	ID := jfsi.ID(id)
 
-	var req CreateRequest
+	var req metastore.CreateRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		txt := fmt.Sprintf("Couldn't parse JSON body (%v)", err.Error())
