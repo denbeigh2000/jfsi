@@ -11,7 +11,7 @@ import (
 	"github.com/denbeigh2000/jfsi/utils"
 )
 
-func NewClient(host string, port int) metastore.MetaStore {
+func NewHTTP(host string, port int) metastore.MetaStore {
 	return &client{
 		Host:   fmt.Sprintf("http://%v:%v", host, port),
 		client: http.DefaultClient,
