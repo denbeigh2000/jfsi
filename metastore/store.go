@@ -5,8 +5,8 @@ import (
 )
 
 type Record struct {
-	Key    jfsi.ID
-	Chunks []jfsi.ID
+	Key    jfsi.ID   `json:"key"`
+	Chunks []jfsi.ID `json:"chunks"`
 }
 
 type MetaStore interface {
