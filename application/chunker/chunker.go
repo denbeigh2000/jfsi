@@ -3,7 +3,6 @@ package chunker
 import (
 	"bytes"
 	"io"
-	"io/ioutil"
 	"log"
 )
 
@@ -22,17 +21,11 @@ type chunker struct {
 }
 
 func (c chunker) Chunk(r io.Reader) ([]io.Reader, error) {
-	data, err := ioutil.ReadAll(r)
-	if err != nil {
-		log.Fatalf("Failed: %v", err)
-	}
-	re := bytes.NewReader(data)
 	out := make([]io.Reader, 0)
-	log.Printf("Preparing to chunk out %v bytes of data", len(data))
 	for {
 		var buf []byte
 		dst := bytes.NewBuffer(buf)
-		n, err := io.CopyN(dst, re, int64(c.size))
+		n, err := io.CopyN(dst, r, int64(c.size))
 		switch err {
 		case io.EOF:
 			// we are at the end of the reader, but haven't read any chunks
