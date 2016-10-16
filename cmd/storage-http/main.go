@@ -23,5 +23,7 @@ func main() {
 	store := disk.NewDiskStore(*dir)
 	handler := handler.NewHTTP(store)
 
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", *port), handler))
+	host := fmt.Sprintf(":%v", *port)
+	log.Printf("Storage serving on %v...", host)
+	log.Fatal(http.ListenAndServe(host, handler))
 }
