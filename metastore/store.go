@@ -9,6 +9,10 @@ type Record struct {
 	Chunks []jfsi.ID `json:"chunks"`
 }
 
+type CreateRequest struct {
+	NChunks int `json:"n"`
+}
+
 type MetaStore interface {
 	Create(key jfsi.ID, n int) (Record, error)
 	Retrieve(key jfsi.ID) (Record, error)

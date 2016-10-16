@@ -6,6 +6,8 @@ import (
 	"github.com/denbeigh2000/jfsi"
 )
 
+const ZeroLenStr = "Cannot allocate MetaStore entry with zero-length capacity"
+
 type KeyAlreadyExistsErr jfsi.ID
 
 func (err KeyAlreadyExistsErr) Error() string {
@@ -21,5 +23,5 @@ func (err KeyNotFoundErr) Error() string {
 type ZeroLengthCapacityRecordErr struct{}
 
 func (err ZeroLengthCapacityRecordErr) Error() string {
-	return "Cannot allocate MetaStore entry with zero-length capacity"
+	return ZeroLenStr
 }
