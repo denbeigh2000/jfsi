@@ -1,13 +1,15 @@
 package application
 
 import (
-	"encoding/binary"
+	"hash/crc64"
 	"log"
 	"sync"
 
 	"github.com/denbeigh2000/jfsi"
 	"github.com/denbeigh2000/jfsi/storage"
 )
+
+var table = crc64.MakeTable(crc64.ISO)
 
 func NewStorageConfig(stores []storage.Store) StorageConfig {
 	return StorageConfig{
@@ -32,8 +34,12 @@ func (s *StorageConfig) Select(id jfsi.ID) []storage.Store {
 		log.Panicf("replication factor (%v) must be less than number of storage nodes (%v)", s.Replication, n)
 	}
 
-	hash, _ := binary.Uvarint([]byte(id))
-	mod := int(hash) % n
+	hash := crc64.Checksum([]byte(id), table)
+	mod := int(hash % uint64(n))
+
+	if mod < 0 {
+		mod = mod * -1
+	}
 
 	stores := make([]storage.Store, 1+s.Replication)
 	for i := 0; i <= s.Replication; i++ {
