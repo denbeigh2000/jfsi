@@ -34,7 +34,6 @@ func (n node) key() jfsi.ID {
 }
 
 func (n node) createChunk(chunkID jfsi.ID, r io.Reader) error {
-	log.Printf("Uploading chunk %v", chunkID)
 	nodes := n.StorageConfig.Select(chunkID)
 
 	err := storage.ParallelCreate(nodes, chunkID, r)
@@ -72,7 +71,6 @@ func (n node) Create(r io.Reader) (jfsi.ID, error) {
 }
 
 func (n node) retrieveChunk(chunkID jfsi.ID) (io.Reader, error) {
-	log.Printf("Retrieving chunk %v", chunkID)
 	nodes := n.StorageConfig.Select(chunkID)
 	r, err := storage.SelectiveRetrieve(nodes, chunkID)
 	if err != nil {
@@ -104,7 +102,6 @@ func (n node) Retrieve(id jfsi.ID) (io.Reader, error) {
 }
 
 func (n node) updateChunk(chunkID jfsi.ID, r io.Reader) error {
-	log.Printf("Updating chunk %v", chunkID)
 	nodes := n.StorageConfig.Select(chunkID)
 
 	err := storage.ParallelUpdate(nodes, chunkID, r)
@@ -158,7 +155,6 @@ func (n node) Update(id jfsi.ID, r io.Reader) error {
 }
 
 func (n node) deleteChunk(id jfsi.ID) error {
-	log.Printf("Deleting chunk %v\n", id)
 	nodes := n.StorageConfig.Select(id)
 
 	err := storage.ParallelDelete(nodes, id)

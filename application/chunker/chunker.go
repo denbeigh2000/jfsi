@@ -3,7 +3,6 @@ package chunker
 import (
 	"bytes"
 	"io"
-	"log"
 )
 
 type Chunker interface {

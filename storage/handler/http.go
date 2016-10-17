@@ -34,7 +34,6 @@ func NewHTTP(store storage.Store) http.Handler {
 }
 
 func (h *HTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	logRequest(r)
 	h.mux.ServeHTTP(w, r)
 }
 
