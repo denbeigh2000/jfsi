@@ -11,10 +11,10 @@ import (
 
 var table = crc64.MakeTable(crc64.ISO)
 
-func NewStorageConfig(stores []storage.Store) StorageConfig {
+func NewStorageConfig(stores []storage.Store, replication int) StorageConfig {
 	return StorageConfig{
 		RWMutex:     &sync.RWMutex{},
-		Replication: 0,
+		Replication: replication,
 		Stores:      stores,
 	}
 }
@@ -43,7 +43,8 @@ func (s *StorageConfig) Select(id jfsi.ID) []storage.Store {
 
 	stores := make([]storage.Store, 1+s.Replication)
 	for i := 0; i <= s.Replication; i++ {
-		stores[i] = s.Stores[mod+i]
+		target := (mod + i) % n
+		stores[i] = s.Stores[target]
 	}
 
 	return stores

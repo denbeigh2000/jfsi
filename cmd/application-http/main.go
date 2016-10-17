@@ -15,6 +15,8 @@ import (
 )
 
 var port = flag.Int("port", 8100, "Port to serve on")
+var replication = flag.Int("replication", 1, "Replication factor to store chunks with")
+var chunkSize = flag.Int("chunk-size", 131072, "Chunk size in bytes (default 128KiB)")
 
 func init() {
 	flag.Parse()
@@ -27,8 +29,8 @@ func main() {
 		client.NewClient("localhost", 8002),
 		client.NewClient("localhost", 8003),
 	}
-	config := application.NewStorageConfig(stores)
-	chunker := chunker.NewChunker(131072)
+	config := application.NewStorageConfig(stores, *replication)
+	chunker := chunker.NewChunker(int64(*chunkSize))
 	metastore := msClient.NewHTTP("localhost", 8200)
 	node := application.NewNode(config, chunker, metastore)
 	handler := handler.NewHTTP(node)

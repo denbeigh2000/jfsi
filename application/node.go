@@ -7,6 +7,7 @@ import (
 	"github.com/denbeigh2000/jfsi"
 	"github.com/denbeigh2000/jfsi/application/chunker"
 	"github.com/denbeigh2000/jfsi/metastore"
+	"github.com/denbeigh2000/jfsi/storage"
 
 	"github.com/satori/go.uuid"
 )
@@ -36,7 +37,7 @@ func (n node) createChunk(chunkID jfsi.ID, r io.Reader) error {
 	log.Printf("Uploading chunk %v", chunkID)
 	nodes := n.StorageConfig.Select(chunkID)
 
-	err := nodes[0].Create(chunkID, r)
+	err := storage.ParallelCreate(nodes, chunkID, r)
 	if err != nil {
 		return err
 	}
@@ -73,7 +74,7 @@ func (n node) Create(r io.Reader) (jfsi.ID, error) {
 func (n node) retrieveChunk(chunkID jfsi.ID) (io.Reader, error) {
 	log.Printf("Retrieving chunk %v", chunkID)
 	nodes := n.StorageConfig.Select(chunkID)
-	r, err := nodes[0].Retrieve(chunkID)
+	r, err := storage.SelectiveRetrieve(nodes, chunkID)
 	if err != nil {
 		return nil, err
 	}
@@ -106,7 +107,7 @@ func (n node) updateChunk(chunkID jfsi.ID, r io.Reader) error {
 	log.Printf("Updating chunk %v", chunkID)
 	nodes := n.StorageConfig.Select(chunkID)
 
-	err := nodes[0].Update(chunkID, r)
+	err := storage.ParallelUpdate(nodes, chunkID, r)
 	if err != nil {
 		return err
 	}
@@ -160,7 +161,7 @@ func (n node) deleteChunk(id jfsi.ID) error {
 	log.Printf("Deleting chunk %v\n", id)
 	nodes := n.StorageConfig.Select(id)
 
-	err := nodes[0].Delete(id)
+	err := storage.ParallelDelete(nodes, id)
 	if err != nil {
 		return err
 	}
