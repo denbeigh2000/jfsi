@@ -33,13 +33,9 @@ func (c chunker) Chunk(r io.Reader) ([]io.Reader, error) {
 				return nil, io.EOF
 			}
 
-			log.Printf("Chunked out last chunk with %v bytes of data", n)
-
 			out = append(out, dst)
-
 			return out, nil
 		case nil:
-			log.Printf("Chunked out %v bytes of data", n)
 			out = append(out, dst)
 		default:
 			// something else went wrong reading from our reader - all is lost
