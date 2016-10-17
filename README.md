@@ -21,6 +21,7 @@ It does have:
  - RESTful HTTP API
  - Replication
  - Sharding
+ - Chunked storage
  - Dynamically-scalable frontend
 
 It does not:
@@ -40,7 +41,7 @@ need to be rebalanced when changing the number of nodes in a pool.
 the mapping of blob uuid to chunk uuid. The metadata nodes are the source of
 truth for whether a node exists, and the chunk uuid mapping will
 deterministically map the nodes in the cluster that the chunk/s can be found
-on.
+on. This functionality is currently implemented with Redis as the backend.
 
 (Soon) Configuration is spread by controller nodes that serve JSON over HTTP,
 which can be marshaled into an `application.StorageConfig` type.
@@ -76,7 +77,6 @@ application-http -port 8080`
 
 ### TODO
  - Caching layers around store/application interfaces (wrap-around any implementation)
- - Chunked file storage (to avoid imbalance)
  - Metadata store for storing chunk info (shard/replicate using same manner)
  - Periodic health-check polling/mark node unhealthy in http clients
  - Periodic check (from FE nodes? Coordinator nodes?) that the storage nodes are in
