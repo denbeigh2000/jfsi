@@ -24,7 +24,7 @@ func (c chunker) Chunk(r io.Reader) ([]io.Reader, error) {
 	for {
 		var buf []byte
 		dst := bytes.NewBuffer(buf)
-		n, err := io.CopyN(dst, r, int64(c.size))
+		_, err := io.CopyN(dst, r, int64(c.size))
 		switch err {
 		case io.EOF:
 			// we are at the end of the reader, but haven't read any chunks
