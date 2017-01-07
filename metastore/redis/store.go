@@ -43,7 +43,7 @@ func (s *store) Create(key jfsi.ID, n int) (r metastore.Record, err error) {
 		return
 	}
 
-	exists, err := s.client.Exists(string(key)).Result()
+	exists, err := s.client.Exists(key.String()).Result()
 	if err != nil {
 		return
 	}
@@ -57,10 +57,10 @@ func (s *store) Create(key jfsi.ID, n int) (r metastore.Record, err error) {
 	for i := 0; i < n; i++ {
 		id := jfsi.NewID()
 		items[i] = id
-		redisItems[i] = string(id)
+		redisItems[i] = id.String()
 	}
 
-	err = s.client.RPush(string(key), redisItems...).Err()
+	err = s.client.RPush(key.String(), redisItems...).Err()
 	if err != nil {
 		return
 	}
@@ -73,7 +73,7 @@ func (s *store) Create(key jfsi.ID, n int) (r metastore.Record, err error) {
 }
 
 func (s *store) Retrieve(key jfsi.ID) (r metastore.Record, err error) {
-	exists, err := s.client.Exists(string(key)).Result()
+	exists, err := s.client.Exists(key.String()).Result()
 	if err != nil {
 		return
 	}
@@ -82,14 +82,17 @@ func (s *store) Retrieve(key jfsi.ID) (r metastore.Record, err error) {
 		return
 	}
 
-	items, err := s.client.LRange(string(key), 0, -1).Result()
+	items, err := s.client.LRange(key.String(), 0, -1).Result()
 	if err != nil {
 		return
 	}
 
 	ids := make([]jfsi.ID, len(items))
 	for i, item := range items {
-		ids[i] = jfsi.ID(item)
+		ids[i], err = jfsi.IDFromString(item)
+		if err != nil {
+			return
+		}
 	}
 
 	r = metastore.Record{
@@ -100,7 +103,7 @@ func (s *store) Retrieve(key jfsi.ID) (r metastore.Record, err error) {
 }
 
 func (s *store) Update(key jfsi.ID, r metastore.Record) error {
-	exists, err := s.client.Exists(string(key)).Result()
+	exists, err := s.client.Exists(key.String()).Result()
 	if err != nil {
 		return err
 	}
@@ -109,7 +112,7 @@ func (s *store) Update(key jfsi.ID, r metastore.Record) error {
 		return err
 	}
 
-	result, err := s.client.Del(string(key)).Result()
+	result, err := s.client.Del(key.String()).Result()
 	if err != nil {
 		return err
 	}
@@ -123,7 +126,7 @@ func (s *store) Update(key jfsi.ID, r metastore.Record) error {
 		redisItems[i] = chunkID
 	}
 
-	err = s.client.RPush(string(key), redisItems...).Err()
+	err = s.client.RPush(key.String(), redisItems...).Err()
 	if err != nil {
 		return err
 	}
@@ -132,7 +135,7 @@ func (s *store) Update(key jfsi.ID, r metastore.Record) error {
 }
 
 func (s *store) Delete(key jfsi.ID) error {
-	exists, err := s.client.Exists(string(key)).Result()
+	exists, err := s.client.Exists(key.String()).Result()
 	if err != nil {
 		return err
 	}
@@ -141,7 +144,7 @@ func (s *store) Delete(key jfsi.ID) error {
 		return err
 	}
 
-	err = s.client.Del(string(key)).Err()
+	err = s.client.Del(key.String()).Err()
 	if err != nil {
 		return err
 	}

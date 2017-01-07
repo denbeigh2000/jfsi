@@ -25,7 +25,7 @@ type client struct {
 }
 
 func (c client) url(id jfsi.ID) string {
-	return fmt.Sprintf("%v/%v", c.Host, string(id))
+	return fmt.Sprintf("%v/%v", c.Host, id)
 }
 
 func (c client) Create(key jfsi.ID, n int) (r metastore.Record, err error) {

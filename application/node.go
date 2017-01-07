@@ -8,8 +8,6 @@ import (
 	"github.com/denbeigh2000/jfsi/application/chunker"
 	"github.com/denbeigh2000/jfsi/metastore"
 	"github.com/denbeigh2000/jfsi/storage"
-
-	"github.com/satori/go.uuid"
 )
 
 type Node interface {
@@ -34,7 +32,7 @@ type node struct {
 }
 
 func (n node) key() jfsi.ID {
-	return jfsi.ID(uuid.NewV4().String())
+	return jfsi.NewID()
 }
 
 func (n node) createChunk(chunkID jfsi.ID, r io.Reader) error {
@@ -53,13 +51,13 @@ func (n node) Create(r io.Reader) (jfsi.ID, error) {
 	log.Printf("Creating chunks for %v", id)
 	chunks, err := n.Chunker.Chunk(r)
 	if err != nil {
-		return jfsi.ID(""), err
+		return jfsi.ID{}, err
 	}
 
 	log.Printf("Creating metastore entries for %v", id)
 	record, err := n.MetaStore.Create(id, len(chunks))
 	if err != nil {
-		return jfsi.ID(""), err
+		return jfsi.ID{}, err
 	}
 
 	// TODO: parallelise this
@@ -67,7 +65,7 @@ func (n node) Create(r io.Reader) (jfsi.ID, error) {
 	for i, chunk := range record.Chunks {
 		err = n.createChunk(chunk, chunks[i])
 		if err != nil {
-			return jfsi.ID(""), err
+			return jfsi.ID{}, err
 		}
 	}
 

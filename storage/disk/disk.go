@@ -20,7 +20,7 @@ func (s store) path(id jfsi.ID) string {
 		panic("disk store dir is nil - cannot continue")
 	}
 
-	return filepath.Join(s.dir, string(id))
+	return filepath.Join(s.dir, id.String())
 }
 
 func (s store) exists(id jfsi.ID) bool {

@@ -11,13 +11,13 @@ const ZeroLenStr = "Cannot allocate MetaStore entry with zero-length capacity"
 type KeyAlreadyExistsErr jfsi.ID
 
 func (err KeyAlreadyExistsErr) Error() string {
-	return fmt.Sprintf("Key already exists: %v", string(err))
+	return fmt.Sprintf("Key already exists: %v", jfsi.ID(err))
 }
 
 type KeyNotFoundErr jfsi.ID
 
 func (err KeyNotFoundErr) Error() string {
-	return fmt.Sprintf("Key not found: %v", string(err))
+	return fmt.Sprintf("Key not found: %v", jfsi.ID(err))
 }
 
 type ZeroLengthCapacityRecordErr struct{}

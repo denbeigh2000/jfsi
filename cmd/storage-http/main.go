@@ -6,21 +6,24 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/denbeigh2000/jfsi/storage/disk"
+	"github.com/denbeigh2000/jfsi/storage/cassandra"
 	"github.com/denbeigh2000/jfsi/storage/handler"
 )
 
 var (
-	port = flag.Int("port", 8080, "Port to serve on")
-	dir  = flag.String("dir", "./.jfsi", "Directory to store blobs in")
+	port     = flag.Int("port", 8080, "Port to serve on")
+	keyspace = flag.String("keyspace", "jfsi", "Keyspace to use")
+	hostFlag arrayFlags
 )
 
 func init() {
+	flag.Var(&hostFlag, "hosts", "Cassandra hosts")
 	flag.Parse()
 }
 
 func main() {
-	store := disk.NewDiskStore(*dir)
+	hosts := []string(hostFlag)
+	store := cassandra.New(*keyspace, hosts...)
 	handler := handler.NewHTTP(store)
 
 	host := fmt.Sprintf(":%v", *port)

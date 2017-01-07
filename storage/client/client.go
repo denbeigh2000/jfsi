@@ -25,7 +25,7 @@ type client struct {
 }
 
 func (c client) url(id jfsi.ID) string {
-	return fmt.Sprintf("%v/%v", c.Host, string(id))
+	return fmt.Sprintf("%v/%v", c.Host, id)
 }
 
 func (c client) Create(id jfsi.ID, r io.Reader) error {

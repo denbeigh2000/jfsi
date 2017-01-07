@@ -10,13 +10,13 @@ import (
 type AlreadyExistsErr jfsi.ID
 
 func (err AlreadyExistsErr) Error() string {
-	return fmt.Sprintf("Key already exists: %v", string(err))
+	return fmt.Sprintf("Key already exists: %v", err)
 }
 
 type NotFoundErr jfsi.ID
 
 func (err NotFoundErr) Error() string {
-	return fmt.Sprintf("Key not found: %v", string(err))
+	return fmt.Sprintf("Key not found: %v", err)
 }
 
 type Readerer interface {

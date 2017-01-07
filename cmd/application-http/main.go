@@ -25,14 +25,14 @@ func init() {
 func main() {
 	stores := []storage.Store{
 		client.NewClient("localhost", 8000),
-		client.NewClient("localhost", 8001),
-		client.NewClient("localhost", 8002),
-		client.NewClient("localhost", 8003),
+		//client.NewClient("localhost", 8001),
+		//client.NewClient("localhost", 8002),
+		//client.NewClient("localhost", 8003),
 	}
-	config := application.NewStorageConfig(stores, *replication)
+	// config := application.NewStorageConfig(stores, *replication)
 	chunker := chunker.NewChunker(int64(*chunkSize))
 	metastore := msClient.NewHTTP("localhost", 8200)
-	node := application.NewNode(config, chunker, metastore)
+	node := application.NewNode(stores, chunker, metastore)
 	handler := handler.NewHTTP(node)
 
 	host := fmt.Sprintf(":%v", *port)

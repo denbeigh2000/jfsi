@@ -32,10 +32,6 @@ const (
 	deleteQuery   = `DELETE FROM storage WHERE key = ?;`
 )
 
-func uuidFromID(id jfsi.ID) (gocql.UUID, error) {
-	return gocql.UUIDFromBytes([]byte(string(id)))
-}
-
 type store struct {
 	hosts       []string
 	keyspace    string
@@ -44,13 +40,14 @@ type store struct {
 	cluster *gocql.ClusterConfig
 }
 
-func New(keyspace, hosts ...string) (storage.Store, error) {
+func New(keyspace string, hosts ...string) storage.Store {
 	newStore := &store{
 		hosts:    hosts,
 		keyspace: keyspace,
 	}
 
-	clusterConfig := gocql.NewCluster(hosts...)
+	newStore.configure()
+	return newStore
 }
 
 func (s *store) configure() {
@@ -59,15 +56,18 @@ func (s *store) configure() {
 }
 
 func (s *store) session() (*gocql.Session, error) {
-	return s.cluster.CreateSession()
+	// TODO: Allow for more flexibility
+	session, err := s.cluster.CreateSession()
+	if err != nil {
+		return nil, err
+	}
+	session.SetConsistency(gocql.LocalOne)
+
+	return session, nil
 }
 
 func (s *store) Create(id jfsi.ID, r io.Reader) error {
-	uuid, err := uuidFromID(id)
-	if err != nil {
-		return err
-	}
-
+	uuid := gocql.UUID(id)
 	data, err := ioutil.ReadAll(r)
 	if err != nil {
 		return err
@@ -77,24 +77,18 @@ func (s *store) Create(id jfsi.ID, r io.Reader) error {
 	if err != nil {
 		return err
 	}
+	defer session.Close()
 
-	if err := session.Query(insertQuery, uuid, data).Exec(); err != nil {
-		return err
-	}
-
-	return nil
+	return session.Query(insertQuery, uuid, data).Exec()
 }
 
 func (s *store) Retrieve(id jfsi.ID) (io.Reader, error) {
-	uuid, err := uuidFromID(id)
-	if err != nil {
-		return nil, err
-	}
-
+	uuid := gocql.UUID(id)
 	session, err := s.session()
 	if err != nil {
 		return nil, err
 	}
+	defer session.Close()
 
 	query := session.Query(retrieveQuery, uuid)
 
@@ -108,11 +102,7 @@ func (s *store) Retrieve(id jfsi.ID) (io.Reader, error) {
 }
 
 func (s *store) Update(id jfsi.ID, r io.Reader) error {
-	uuid, err := uuidFromID(id)
-	if err != nil {
-		return err
-	}
-
+	uuid := gocql.UUID(id)
 	data, err := ioutil.ReadAll(r)
 	if err != nil {
 		return err
@@ -122,28 +112,18 @@ func (s *store) Update(id jfsi.ID, r io.Reader) error {
 	if err != nil {
 		return err
 	}
+	defer session.Close()
 
-	if err := session.Query(updateQuery, uuid, data).Exec(); err != nil {
-		return err
-	}
-
-	return nil
+	return session.Query(updateQuery, uuid, data).Exec()
 }
 
 func (s *store) Delete(id jfsi.ID) error {
-	uuid, err := uuidFromID(id)
-	if err != nil {
-		return err
-	}
-
+	uuid := gocql.UUID(id)
 	session, err := s.session()
 	if err != nil {
 		return err
 	}
+	defer session.Close()
 
-	if err := session.Query(deleteQuery, uuid).Exec(); err != nil {
-		return err
-	}
-
-	return nil
+	return session.Query(deleteQuery, uuid).Exec()
 }

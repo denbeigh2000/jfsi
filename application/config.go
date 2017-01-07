@@ -50,7 +50,7 @@ func (s *DiskStorageConfig) Select(id jfsi.ID) []storage.Store {
 		log.Panicf("replication factor (%v) must be less than number of storage nodes (%v)", s.Replication, n)
 	}
 
-	hash := crc64.Checksum([]byte(id), table)
+	hash := crc64.Checksum([]byte(id.String()), table)
 	mod := int(hash % uint64(n))
 
 	if mod < 0 {

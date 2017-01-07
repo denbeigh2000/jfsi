@@ -46,10 +46,13 @@ func (h *HTTP) HandleCreate(w http.ResponseWriter, r *http.Request) {
 		utils.RespondError(w, "No ID given", 400)
 	}
 
-	ID := jfsi.ID(id)
+	ID, err := jfsi.IDFromString(id)
+	if err != nil {
+		utils.RespondError(w, err.Error(), 400)
+	}
 
 	var req metastore.CreateRequest
-	err := json.NewDecoder(r.Body).Decode(&req)
+	err = json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		txt := fmt.Sprintf("Couldn't parse JSON body (%v)", err.Error())
 		utils.RespondError(w, txt, 400)
@@ -73,7 +76,10 @@ func (h *HTTP) HandleRetrieve(w http.ResponseWriter, r *http.Request) {
 		utils.RespondError(w, "No ID given", 400)
 	}
 
-	ID := jfsi.ID(id)
+	ID, err := jfsi.IDFromString(id)
+	if err != nil {
+		utils.RespondError(w, err.Error(), 400)
+	}
 
 	record, err := h.Store.Retrieve(ID)
 	switch err.(type) {
@@ -93,10 +99,13 @@ func (h *HTTP) HandleUpdate(w http.ResponseWriter, r *http.Request) {
 		utils.RespondError(w, "No ID given", 400)
 	}
 
-	ID := jfsi.ID(id)
+	ID, err := jfsi.IDFromString(id)
+	if err != nil {
+		utils.RespondError(w, err.Error(), 400)
+	}
 
 	var record metastore.Record
-	err := json.NewDecoder(r.Body).Decode(&record)
+	err = json.NewDecoder(r.Body).Decode(&record)
 	if err != nil {
 		txt := fmt.Sprintf("Couldn't parse JSON body (%v)", err.Error())
 		utils.RespondError(w, txt, 400)
@@ -120,9 +129,12 @@ func (h *HTTP) HandleDelete(w http.ResponseWriter, r *http.Request) {
 		utils.RespondError(w, "No ID given", 400)
 	}
 
-	ID := jfsi.ID(id)
+	ID, err := jfsi.IDFromString(id)
+	if err != nil {
+		utils.RespondError(w, err.Error(), 400)
+	}
 
-	err := h.Store.Delete(ID)
+	err = h.Store.Delete(ID)
 	switch err.(type) {
 	case nil:
 		utils.RespondSuccess(w, "OK")

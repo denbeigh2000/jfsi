@@ -14,3 +14,7 @@ var CreateMetastore = `
 		chunks list<uuid>
 	);
 `
+
+var CreateKeyspace = `
+	CREATE KEYSPACE %v WITH REPLICATION = {'class': 'SimpleStrategy', 'replication_factor': %d};
+`

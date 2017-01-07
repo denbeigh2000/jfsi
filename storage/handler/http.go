@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 
@@ -44,9 +45,12 @@ func (h *HTTP) HandleCreate(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "No ID given", 400)
 	}
 
-	ID := jfsi.ID(id)
+	ID, err := jfsi.IDFromString(id)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Badly formatted ID: %v", id), 400)
+	}
 
-	err := h.Store.Create(ID, r.Body)
+	err = h.Store.Create(ID, r.Body)
 	switch err.(type) {
 	case nil:
 		http.Error(w, "OK", 200)
@@ -64,7 +68,10 @@ func (h *HTTP) HandleRetrieve(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "No ID given", 400)
 	}
 
-	ID := jfsi.ID(id)
+	ID, err := jfsi.IDFromString(id)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Badly formatted ID: %v", id), 400)
+	}
 
 	data, err := h.Store.Retrieve(ID)
 	switch err.(type) {
@@ -84,9 +91,12 @@ func (h *HTTP) HandleUpdate(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "No ID given", 400)
 	}
 
-	ID := jfsi.ID(id)
+	ID, err := jfsi.IDFromString(id)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Badly formatted ID: %v", id), 400)
+	}
 
-	err := h.Store.Update(ID, r.Body)
+	err = h.Store.Update(ID, r.Body)
 	switch err.(type) {
 	case nil:
 		http.Error(w, "OK", 200)
@@ -104,9 +114,12 @@ func (h *HTTP) HandleDelete(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "No ID given", 400)
 	}
 
-	ID := jfsi.ID(id)
+	ID, err := jfsi.IDFromString(id)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Badly formatted ID: %v", id), 400)
+	}
 
-	err := h.Store.Delete(ID)
+	err = h.Store.Delete(ID)
 	switch err.(type) {
 	case nil:
 		http.Error(w, "OK", 200)

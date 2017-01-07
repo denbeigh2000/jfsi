@@ -44,7 +44,7 @@ func (h *HTTP) HandleCreate(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 	}
 
-	http.Error(w, string(id), 200)
+	http.Error(w, id.String(), 200)
 }
 
 func (h *HTTP) HandleRetrieve(w http.ResponseWriter, r *http.Request) {
@@ -54,7 +54,11 @@ func (h *HTTP) HandleRetrieve(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "No ID given", 400)
 	}
 
-	ID := jfsi.ID(id)
+	ID, err := jfsi.IDFromString(id)
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
+	}
 
 	data, err := h.Node.Retrieve(ID)
 	switch err.(type) {
@@ -74,9 +78,13 @@ func (h *HTTP) HandleUpdate(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "No ID given", 400)
 	}
 
-	ID := jfsi.ID(id)
+	ID, err := jfsi.IDFromString(id)
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
+	}
 
-	err := h.Node.Update(ID, r.Body)
+	err = h.Node.Update(ID, r.Body)
 	switch err.(type) {
 	case nil:
 		http.Error(w, "OK", 200)
@@ -94,9 +102,13 @@ func (h *HTTP) HandleDelete(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "No ID given", 400)
 	}
 
-	ID := jfsi.ID(id)
+	ID, err := jfsi.IDFromString(id)
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
+	}
 
-	err := h.Node.Delete(ID)
+	err = h.Node.Delete(ID)
 	switch err.(type) {
 	case nil:
 		http.Error(w, "OK", 200)
