@@ -19,14 +19,18 @@ type Node interface {
 	Delete(jfsi.ID) error
 }
 
-func NewNode(sc StorageConfig, c chunker.Chunker, ms metastore.MetaStore) Node {
-	return node{StorageConfig: sc, Chunker: c, MetaStore: ms}
+func NewNode(s []storage.Store, c chunker.Chunker, ms metastore.MetaStore) Node {
+	return node{
+		Stores:    s,
+		Chunker:   c,
+		MetaStore: ms,
+	}
 }
 
 type node struct {
-	StorageConfig StorageConfig
-	Chunker       chunker.Chunker
-	MetaStore     metastore.MetaStore
+	Stores    []storage.Store
+	Chunker   chunker.Chunker
+	MetaStore metastore.MetaStore
 }
 
 func (n node) key() jfsi.ID {
@@ -34,9 +38,9 @@ func (n node) key() jfsi.ID {
 }
 
 func (n node) createChunk(chunkID jfsi.ID, r io.Reader) error {
-	nodes := n.StorageConfig.Select(chunkID)
+	store := Select(n.Stores)
 
-	err := storage.ParallelCreate(nodes, chunkID, r)
+	err := store.Create(chunkID, r)
 	if err != nil {
 		return err
 	}
@@ -71,8 +75,8 @@ func (n node) Create(r io.Reader) (jfsi.ID, error) {
 }
 
 func (n node) retrieveChunk(chunkID jfsi.ID) (io.Reader, error) {
-	nodes := n.StorageConfig.Select(chunkID)
-	r, err := storage.SelectiveRetrieve(nodes, chunkID)
+	store := Select(n.Stores)
+	r, err := store.Retrieve(chunkID)
 	if err != nil {
 		return nil, err
 	}
@@ -102,14 +106,8 @@ func (n node) Retrieve(id jfsi.ID) (io.Reader, error) {
 }
 
 func (n node) updateChunk(chunkID jfsi.ID, r io.Reader) error {
-	nodes := n.StorageConfig.Select(chunkID)
-
-	err := storage.ParallelUpdate(nodes, chunkID, r)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	store := Select(n.Stores)
+	return store.Update(chunkID, r)
 }
 
 func (n node) Update(id jfsi.ID, r io.Reader) error {
@@ -155,14 +153,8 @@ func (n node) Update(id jfsi.ID, r io.Reader) error {
 }
 
 func (n node) deleteChunk(id jfsi.ID) error {
-	nodes := n.StorageConfig.Select(id)
-
-	err := storage.ParallelDelete(nodes, id)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	store := Select(n.Stores)
+	return store.Delete(id)
 }
 
 func (n node) Delete(id jfsi.ID) error {

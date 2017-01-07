@@ -2,7 +2,9 @@ package application
 
 import (
 	"hash/crc64"
+	"io"
 	"log"
+	"math/rand"
 	"sync"
 
 	"github.com/denbeigh2000/jfsi"
@@ -11,22 +13,36 @@ import (
 
 var table = crc64.MakeTable(crc64.ISO)
 
-func NewStorageConfig(stores []storage.Store, replication int) StorageConfig {
-	return StorageConfig{
+func Select(stores []storage.Store) storage.Store {
+	n := rand.Int31n(int32(len(stores)))
+	return stores[n]
+}
+
+// TODO: Move these to storage layer
+func NewDiskStorageConfig(stores []storage.Store, replication int) DiskStorageConfig {
+	return DiskStorageConfig{
 		RWMutex:     &sync.RWMutex{},
 		Replication: replication,
 		Stores:      stores,
 	}
 }
 
-type StorageConfig struct {
+type DiskStorageConfig struct {
 	*sync.RWMutex
 
 	Replication int
 	Stores      []storage.Store
 }
 
-func (s *StorageConfig) Select(id jfsi.ID) []storage.Store {
+type Selecter interface {
+	Select(jfsi.ID) []storage.Store
+}
+
+type Transferrer interface {
+	Transfer(jfsi.ID, []storage.Store, io.Reader) error
+}
+
+func (s *DiskStorageConfig) Select(id jfsi.ID) []storage.Store {
 	s.RLock()
 	defer s.RUnlock()
 	n := len(s.Stores)
