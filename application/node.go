@@ -3,6 +3,7 @@ package application
 import (
 	"io"
 	"log"
+	"math/rand"
 
 	"github.com/denbeigh2000/jfsi"
 	"github.com/denbeigh2000/jfsi/application/chunker"
@@ -44,6 +45,11 @@ func (n node) createChunk(chunkID jfsi.ID, r io.Reader) error {
 	}
 
 	return nil
+}
+
+func Select(stores []storage.Store) storage.Store {
+	n := rand.Int31n(int32(len(stores)))
+	return stores[n]
 }
 
 func (n node) Create(r io.Reader) (jfsi.ID, error) {
