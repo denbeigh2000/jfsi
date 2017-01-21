@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/denbeigh2000/jfsi/cmd/common"
 	"github.com/denbeigh2000/jfsi/storage/cassandra"
 	"github.com/denbeigh2000/jfsi/storage/handler"
 )
@@ -13,7 +14,7 @@ import (
 var (
 	port     = flag.Int("port", 8080, "Port to serve on")
 	keyspace = flag.String("keyspace", "jfsi", "Keyspace to use")
-	hostFlag arrayFlags
+	hostFlag common.ArrayFlags
 )
 
 func init() {

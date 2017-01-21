@@ -29,7 +29,6 @@ func main() {
 		//client.NewClient("localhost", 8002),
 		//client.NewClient("localhost", 8003),
 	}
-	// config := application.NewStorageConfig(stores, *replication)
 	chunker := chunker.NewChunker(int64(*chunkSize))
 	metastore := msClient.NewHTTP("localhost", 8200)
 	node := application.NewNode(stores, chunker, metastore)
