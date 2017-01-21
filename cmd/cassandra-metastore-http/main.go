@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strings"
 
+	"github.com/denbeigh2000/jfsi/cmd/common"
 	"github.com/denbeigh2000/jfsi/metastore/cassandra"
 	"github.com/denbeigh2000/jfsi/metastore/handler"
 )
@@ -14,7 +14,7 @@ import (
 var (
 	port     = flag.Int("port", 8200, "Port to serve on")
 	keyspace = flag.String("keyspace", "jfsi", "Cassandra keyspace to use")
-	hostFlag arrayFlags
+	hostFlag common.ArrayFlags
 )
 
 func init() {
@@ -30,15 +30,4 @@ func main() {
 
 	fmt.Printf("Metastore serving on %v...\n", host)
 	log.Fatal(http.ListenAndServe(host, handler))
-}
-
-type arrayFlags []string
-
-func (i *arrayFlags) String() string {
-	return strings.Join(*i, ",")
-}
-
-func (i *arrayFlags) Set(value string) error {
-	*i = append(*i, value)
-	return nil
 }
