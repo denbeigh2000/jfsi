@@ -76,7 +76,6 @@ application-http -port 8080`
 ```
 
 ### TODO
- - Caching layers around store/application interfaces (wrap-around any implementation)
  - Metadata store for storing chunk info (shard/replicate using same manner)
  - Periodic health-check polling/mark node unhealthy in http clients
  - Tools for adding/removing nodes to an existing cluster + providing rebalancing tools
