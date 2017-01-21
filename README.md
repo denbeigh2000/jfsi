@@ -37,11 +37,11 @@ are horizontally scalable and can have more added/removed at any time.
 Storage load is distributed between a number of storage nodes - these
 need to be rebalanced when changing the number of nodes in a pool.
 
-(Soon) A number of metadata nodes store information about the blobs, namely
+A number of metadata nodes store information about the blobs, namely
 the mapping of blob uuid to chunk uuid. The metadata nodes are the source of
 truth for whether a node exists, and the chunk uuid mapping will
 deterministically map the nodes in the cluster that the chunk/s can be found
-on. This functionality is currently implemented with Redis as the backend.
+on. Redis and Cassandra implementations are provided.
 
 (Soon) Configuration is spread by controller nodes that serve JSON over HTTP,
 which can be marshaled into an `application.StorageConfig` type.
@@ -79,9 +79,6 @@ application-http -port 8080`
  - Caching layers around store/application interfaces (wrap-around any implementation)
  - Metadata store for storing chunk info (shard/replicate using same manner)
  - Periodic health-check polling/mark node unhealthy in http clients
- - Periodic check (from FE nodes? Coordinator nodes?) that the storage nodes are in
-   sync with metadata nodes, and properly replicated
  - Tools for adding/removing nodes to an existing cluster + providing rebalancing tools
  - Configuration nodes
  - Configuration file support for applications
- - Some way to account for node failures in replication (either hinted handoff, some simple metadata storage in coordinator for later fulfillment)
