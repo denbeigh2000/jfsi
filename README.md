@@ -2,9 +2,9 @@
 
 > **j**ust **f**ucking **s**tore **i**t
 
-This software is still in a development stage.
+This software is still in a development stage, it is not yet suited for a production use case.
 
-jfsi is a scalable, distributed blob storage engine with a RESTful API.
+jfsi is a scalable, distributed blob storage engine with a RESTful API. It is built on Cassandra, but can be changed easily to use other backends such as S3, etc.
 
 ### What is jfsi?
 jfsi is a very simple key-value blob store which supports CRUD
@@ -23,11 +23,19 @@ It does have:
  - Sharding
  - Chunked storage
  - Dynamically-scalable frontend
+ - Caching "for free" at both layers, with any backend
 
 It does not:
  - Store metadata
  - Provide any kind of authentication
  - Provide any hierarchical directory structure
+ - Support versioning
+ 
+TODO:
+ - Change to using io.ReadSeekers instead of io.Readers, caching only required chunks with readahead (wip)
+ - Unit testing
+ - Periodic health-check polling/mark node unhealthy in http clients
+ - YAML Configuration support for servers
 
 ### Structure
 
@@ -57,13 +65,6 @@ which can be marshaled into an `application.StorageConfig` type.
 | GET           | /&lt;blobID&gt;   | Download a blob   |
 | DELETE        | /&lt;blobID&gt;   | Delete a blob     |
 
-Stuff that is still 
-- Tools for adding/removing nodes to an existing cluster + providing rebalancing tools
-- Configuration nodes
-- Configuration file support for applications
-- Some way to account for node failures in replication (either hinted handoff, some simple metadata storage in coordinator for later fulfillment)
-
-
 #### Binaries
 Storage node:
 ```
@@ -72,12 +73,15 @@ storage-http -port 8000
 
 Application node:
 ```
-application-http -port 8080`
+application-http -port 8001
 ```
 
-### TODO
- - Metadata store for storing chunk info (shard/replicate using same manner)
- - Periodic health-check polling/mark node unhealthy in http clients
- - Tools for adding/removing nodes to an existing cluster + providing rebalancing tools
- - Configuration nodes
- - Configuration file support for applications
+Metastore node:
+```
+{cassandra,redis}-metastore-node -port 8002
+```
+
+Provision tool:
+```
+provision-tool -hosts cass1 -hosts cass2 -hosts cass3 -keyspace jfsi -replication 2
+```
